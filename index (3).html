@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestão de Projetos</title>
+<style>
+:root{--g:#15803d;--gd:#116632;--gl:#f0fdf4;--r:#dc2626;--rl:#fef2f2;--b:#d9e2dc;--t:#1f2937;--m:#6b7280}
+*{box-sizing:border-box}
+.hide,#auth.hide{display:none!important}
+body{margin:0;background:#fff;color:var(--t);font:15px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+header{border-bottom:2px solid var(--g);padding:14px 20px 0}
+header h1{margin:0 0 10px;font-size:20px;color:var(--g)}
+nav{display:flex;gap:2px;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:9px 13px;font:inherit;color:var(--m);cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--g);border-color:var(--g);font-weight:600}
+nav button:hover{color:var(--g)}
+.cn{background:var(--r);color:#fff;border-radius:10px;font-size:12px;padding:0 7px;margin-left:6px;font-weight:600}
+main{max-width:1280px;margin:0 auto;padding:20px}
+.tab{display:none}.tab.on{display:block}
+.card{border:1px solid var(--b);border-radius:8px;padding:18px;margin-bottom:18px}
+h2{margin:0 0 14px;font-size:17px}
+label,.lb{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
+input,select{font:inherit;font-weight:400;padding:8px 10px;border:1px solid #c5d0c9;border-radius:6px;background:#fff;color:var(--t);min-width:0}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--g);outline-offset:1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.full{grid-column:1/-1}.hide{display:none}
+.row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}.row label{flex:1 1 220px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.bar select{min-width:260px}.card.bar{margin-bottom:18px}
+.big{flex:1 1 320px;padding:11px 14px;font-size:16px;border:2px solid var(--g)}
+.add{display:flex;gap:8px}.add input{flex:1}
+.btn{background:var(--g);color:#fff;border:1px solid var(--g);border-radius:6px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--gd)}
+.btn.ghost{background:#fff;color:var(--g)}.btn.ghost:hover{background:var(--gl)}
+.btn.del{background:#fff;color:var(--r);border-color:var(--r)}.btn.del:hover{background:var(--r);color:#fff}
+.btn.sm{padding:3px 10px;font-size:13px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.wrap{overflow:auto;border:1px solid var(--b);border-radius:8px;max-height:68vh}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid #e5ece7;border-right:1px solid #eef2ef;text-align:left;vertical-align:top}
+th{background:var(--g);color:#fff;position:sticky;top:0;white-space:nowrap;font-weight:600;z-index:1}
+tbody tr:nth-child(even){background:#fafcfb}tbody tr:hover{background:var(--gl)}
+td.a{white-space:nowrap}td.a .btn{margin-right:4px}
+.bd{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;border:1px solid;white-space:nowrap;font-weight:400}
+.s{background:var(--gl);color:var(--g);border-color:var(--g)}.n{background:#fff;color:var(--m);border-color:#cbd5d0}
+.st0{background:var(--gl);color:var(--g);border-color:var(--g)}.st1{background:var(--g);color:#fff;border-color:var(--g)}
+.st2{background:#fff;color:var(--g);border-color:var(--g)}.st3{background:var(--r);color:#fff;border-color:var(--r)}
+.st4{background:var(--rl);color:var(--r);border-color:var(--r)}
+.ex{display:inline-flex;width:18px;height:18px;border-radius:50%;background:var(--r);color:#fff;font-weight:700;font-size:12px;align-items:center;justify-content:center;margin-right:6px;cursor:help}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--gl);border:1px solid var(--g);border-radius:16px;padding:3px 6px 3px 10px;font-size:13px;font-weight:400}
+.chip select{font-size:12px;padding:1px 4px}.chip em{font-size:11px;color:var(--g)}
+.chip b{cursor:pointer;color:var(--r);font-size:16px;line-height:1;padding:0 4px}
+.empty{color:var(--m);padding:22px;text-align:center;font-weight:400}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:10px}
+.cnt{color:var(--m);font-size:13px;margin:0 0 8px}.hint{font-size:12px;color:var(--m);font-weight:400}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.stat{border:1px solid var(--b);border-radius:8px;padding:14px}.stat b{display:block;font-size:28px;color:var(--g);line-height:1.1}.stat span{color:var(--m);font-size:13px}
+.stat.red{border-color:var(--r);background:var(--rl);cursor:pointer}.stat.red b{color:var(--r)}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}.charts .card{margin:0}
+.br{display:grid;grid-template-columns:minmax(80px,38%) 1fr 30px;gap:8px;align-items:center;margin:7px 0;font-size:13px}
+.bl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.br b{text-align:right}
+.bt{background:#eef2ef;border-radius:4px;height:14px}.bt i{display:block;height:100%;background:var(--g);border-radius:4px}.bt i.rd{background:var(--r)}
+.ac{position:absolute;z-index:50;background:#fff;border:1px solid var(--g);border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.15);max-height:260px;overflow:auto;font-size:14px}
+.ac div{padding:8px 12px;cursor:pointer}.ac div.on,.ac div:hover{background:var(--gl)}
+.ac .new{color:var(--g);font-weight:600;border-top:1px solid var(--b)}.ac .new small{font-weight:400;color:var(--m)}
+.warn{background:var(--rl);border:1px solid var(--r);color:var(--r);border-radius:6px;padding:8px 12px;font-size:13px}
+.aviso{background:#fffbeb;border-bottom:2px solid #d97706;color:#92400e;padding:10px 20px;font-size:14px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}header nav{flex:1 1 100%}header h1{margin:0 0 10px}
+#rel{display:none}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body>*:not(#rel){display:none!important}
+  #rel{display:block;font-size:10px;color:#000}
+  #rel h1{font-size:18px;color:var(--g);margin:0 0 2px}#rel h2{font-size:13px;margin:16px 0 6px;color:var(--g);break-after:avoid}
+  #rel table{font-size:9px}#rel th,#rel td{padding:4px 5px;position:static}
+  #rel th{background:var(--g)!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #rel thead{display:table-header-group}#rel tr{break-inside:avoid}
+  #rel .resumo{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+  #rel .resumo div{border:1px solid #999;border-radius:4px;padding:5px 10px}#rel .resumo b{font-size:15px;margin-right:4px}
+  #rel .ex{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #rel .pb{break-before:page}
+}
+.stsel{font-size:12px;padding:2px 4px}
+td.ck,th.ck{width:34px;text-align:center;padding:8px 6px}
+td.ck input,th.ck input{width:17px;height:17px;padding:0;accent-color:var(--g);cursor:pointer}
+.selbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 10px;padding:10px 12px;border:1px solid var(--g);background:var(--gl);border-radius:8px}
+.selbar b{color:var(--g)}.selbar .sp{flex:1}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:70;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .card{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;margin:0}
+.modal .grid{margin-bottom:14px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--gd);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;box-shadow:0 6px 18px rgba(0,0,0,.25);max-width:90vw}
+
+#auth{position:fixed;inset:0;background:#f6faf7;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
+#auth .card{width:100%;max-width:380px;margin:0}#auth h1{margin:0 0 4px;font-size:22px;color:var(--g)}
+#auth p{margin:0 0 14px;color:var(--m);font-size:14px}#auth form{display:grid;gap:12px}
+#amsg{font-size:13px;min-height:18px}#amsg.er{color:var(--r)}#amsg.ok{color:var(--g)}
+#who{font-size:13px;color:var(--m);margin:0 8px 0 12px}
+#auth .card{max-width:400px;padding:22px}
+.atabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:2px solid var(--b);margin:0 0 16px}
+.atabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px;font:inherit;font-weight:600;color:var(--m);cursor:pointer}
+.atabs button.on{color:var(--g);border-color:var(--g)}
+.atabs button:hover{color:var(--g)}
+.pw{position:relative;display:block}.pw input{width:100%;padding-right:64px}
+.pw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--g);font:inherit;font-size:12px;font-weight:600;cursor:pointer;padding:6px}
+.alink{background:none;border:0;color:var(--g);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline;padding:0;text-align:left}
+#auth .btn{width:100%;padding:11px 16px}#auth .btn:disabled{opacity:.6;cursor:wait}
+#auth h2{font-size:17px;margin:0 0 4px}
+#auth .links{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+#amsg{padding:0}#amsg.er,#amsg.ok{padding:8px 10px;border-radius:6px}
+#amsg.er{background:var(--rl);border:1px solid var(--r)}#amsg.ok{background:var(--gl);border:1px solid var(--g)}
+#amsg:empty{display:none}
+</style>
+</head>
+<body>
+<div id="aviso" class="aviso hide"></div>
+<div id="auth"><div class="card"><h1>Gestão de Projetos</h1><p id="asub"></p>
+<div class="atabs" id="atabs" role="tablist"><button type="button" role="tab" data-modo="entrar">Entrar</button><button type="button" role="tab" data-modo="criar">Criar conta</button></div>
+<form id="af" novalidate>
+<label>E-mail<input type="email" name="email" required autocomplete="email" inputmode="email"></label>
+<label id="l-senha">Senha<span class="pw"><input type="password" name="senha" minlength="6" autocomplete="current-password"><button type="button" data-ver="senha">Mostrar</button></span></label>
+<label id="l-senha2">Confirmar senha<span class="pw"><input type="password" name="senha2" minlength="6" autocomplete="new-password"><button type="button" data-ver="senha2">Mostrar</button></span></label>
+<div id="amsg" role="status" aria-live="polite"></div>
+<button class="btn" type="submit" id="asub-btn">Entrar</button>
+<div class="links"><button type="button" class="alink" id="l-esq" data-modo="reset">Esqueci minha senha</button><button type="button" class="alink hide" id="l-reenv">Reenviar e-mail de confirmação</button><button type="button" class="alink hide" id="l-volta" data-modo="entrar">← Voltar para Entrar</button></div>
+</form></div></div>
+<header><h1>Gestão de Projetos</h1><button class="btn" id="xls" data-xls="1" title="Baixa uma planilha Excel com o relatório de todos os projetos">Exportar planilha</button><span id="who"></span><button class="btn ghost sm" id="sair">Sair</button> <button class="btn ghost sm hide" id="imp"></button><nav id="nav"></nav></header>
+<main>
+  <section class="tab" id="t-dash"></section>
+  <section class="tab" id="t-cadastro"></section>
+  <section class="tab" id="t-consulta"></section>
+  <section class="tab" id="t-alertas"></section>
+  <section class="tab" id="t-professores"></section>
+  <section class="tab" id="t-editais"></section>
+  <section class="tab" id="t-alunos"></section>
+</main>
+
+<div id="rel"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const STORES=['professores','editais','alunos','projetos'];
+const STATUS=['Em execução','Finalizado','Prorrogado','Cancelado','Relatório pendente'];
+const TABS=[['dash','Dashboard'],['cadastro','Cadastro de projetos'],['consulta','Consulta de projetos'],['alertas','Alertas'],['professores','Professores / Colaboradores'],['editais','Editais'],['alunos','Alunos']];
+let db,D={},tab='dash',draft,F={},editing={};
+const SEL=new Set(); /* ids de projetos marcados na Consulta */
+const key=s=>s==='editais'?'titulo':'nome';
+
+/* ---------- Supabase (dados por conta) ---------- */
+const HASH=location.hash,HP=new URLSearchParams(HASH.replace(/^#/,'')+'&'+location.search.replace(/^\?/,''));
+const REC=HP.get('type')==='recovery',CONF=HP.get('type')==='signup'||HP.get('type')==='email_change';
+const SB=supabase.createClient('https://lpgutfzlvoqzzhyhujww.supabase.co','sb_publishable_66Jo6kktr5cSCjRKxSW9xw_tKT8drVT',
+  {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,lock:async(n,t,fn)=>await fn()}});
+let U=null;
+const BK='relatorios';
+const load=async()=>{
+  STORES.forEach(x=>D[x]=[]);
+  for(let i=0;;i+=1000){
+    const {data,error}=await SB.from('gp_registros').select('id,store,dados').order('id').range(i,i+999);
+    if(error)throw error;
+    data.forEach(r=>D[r.store].push({...r.dados,id:r.id}));
+    if(data.length<1000)break;
+  }
+};
+const save=async(s,o)=>{
+  const {id,...dados}=o;
+  if(id){const {error}=await SB.from('gp_registros').update({dados}).eq('id',id);if(error)throw error;return id}
+  const {data,error}=await SB.from('gp_registros').insert({store:s,dados}).select('id').single();
+  if(error)throw error;o.id=data.id;return data.id;
+};
+const rem=async(s,id)=>{
+  const p=s==='projetos'?by(s,id):null;
+  const {error}=await SB.from('gp_registros').delete().eq('id',id);if(error)throw error;
+  if(p?.pdf?.path)await SB.storage.from(BK).remove([p.pdf.path]);
+};
+async function subirPdf(p,antigo){
+  if(p&&p.path)return p;
+  let novo=null;
+  if(p){
+    const path=U.id+'/'+crypto.randomUUID()+'.pdf';
+    const {error}=await SB.storage.from(BK).upload(path,p,{contentType:'application/pdf'});
+    if(error)throw error;novo={name:p.name||'relatorio.pdf',path};
+  }
+  if(antigo?.path&&antigo.path!==novo?.path)await SB.storage.from(BK).remove([antigo.path]);
+  return novo;
+}
+const putDraft=async()=>{
+  const {pdf,...r}=draft;
+  const {error}=await SB.from('gp_rascunho').upsert({user_id:U.id,dados:{...r,pdf:pdf&&pdf.path?pdf:null},updated_at:new Date().toISOString()});
+  if(error)console.error(error);
+};
+let tm;const persist=()=>{clearTimeout(tm);tm=setTimeout(()=>{tm=null;putDraft()},400)};
+const flush=()=>{if(tm){clearTimeout(tm);tm=null;putDraft()}};
+/* Importa dados que ja estavam salvos neste navegador (IndexedDB antigo) */
+async function lerLocal(){
+  try{
+    if(indexedDB.databases&&!(await indexedDB.databases()).some(d=>d.name==='gestao_projetos'))return null;
+    const l=await new Promise((ok,err)=>{const r=indexedDB.open('gestao_projetos');r.onsuccess=()=>ok(r.result);r.onerror=()=>err(r.error)});
+    if(!STORES.every(x=>l.objectStoreNames.contains(x))){l.close();return null}
+    const L={};
+    for(const x of STORES)L[x]=await new Promise((ok,err)=>{const r=l.transaction(x).objectStore(x).getAll();r.onsuccess=()=>ok(r.result);r.onerror=()=>err(r.error)});
+    l.close();return STORES.some(x=>L[x].length)?L:null;
+  }catch{return null}
+}
+async function importarLocal(L){
+  const M={professores:{},editais:{},alunos:{}};
+  for(const x of ['professores','editais','alunos'])for(const o of L[x])M[x][o.id]=await save(x,{...o,id:undefined});
+  for(const p of L.projetos)await save('projetos',{...p,id:undefined,edital:M.editais[p.edital],coordenador:M.professores[p.coordenador],
+    colaboradores:p.colaboradores.map(i=>M.professores[i]),alunos:p.alunos.map(i=>M.alunos[i]),pdf:await subirPdf(p.pdf instanceof Blob?p.pdf:null)});
+}
+window.addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});
+
+/* ---------- Auxiliares ---------- */
+const by=(s,id)=>D[s].find(x=>x.id===+id);
+const nome=(s,id)=>by(s,id)?.[key(s)]||'—';
+const canon=(s,v)=>D[s].find(y=>norm(y[key(s)])===norm(v))?.[key(s)]||v;
+const yn=v=>`<option>Não</option><option ${v==='Sim'?'selected':''}>Sim</option>`;
+const badge=(l,v)=>`<span class="bd ${v==='Sim'?'s':'n'}">${l}: ${v||'Não'}</span>`;
+const fdate=d=>d?d.split('-').reverse().join('/'):'—';
+const hoje=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const atraso=p=>Math.floor((new Date(hoje())-new Date(p.fim))/864e5);
+function alerta(p){
+  if(!p.fim||p.fim>=hoje())return null;
+  if(p.status==='Relatório pendente')return 'Relatório pendente e prazo vencido';
+  if(p.status==='Em execução'||p.status==='Prorrogado')return `Prazo vencido com status "${p.status}": atualize o status`;
+  return null;
+}
+const ex=p=>alerta(p)?`<span class="ex" title="${esc(alerta(p))}">!</span>`:'';
+
+/* ---------- Rascunho do projeto ---------- */
+const novoRasc=()=>({editId:null,f:{ano:new Date().getFullYear(),edital:'',coord:'',sigaa:'',titulo:'',bolsaAtividade:'Não',pesquisaAplicada:'Não',parceria:'Não',setor:'',inicio:'',fim:'',status:'Em execução'},colab:[],als:[],pdf:null,pend:{colab:'',als:''}});
+const dirty=()=>draft.editId||draft.pend.colab||draft.pend.als||['edital','coord','sigaa','titulo'].some(k=>draft.f[k])||draft.colab.length||draft.als.length;
+const fromProj=p=>({editId:p.id,f:{ano:p.ano,edital:nome('editais',p.edital),coord:nome('professores',p.coordenador),sigaa:p.sigaa,titulo:p.titulo,bolsaAtividade:p.bolsaAtividade,pesquisaAplicada:p.pesquisaAplicada,parceria:p.parceria,setor:p.setor||'',inicio:p.inicio,fim:p.fim,status:p.status},
+  colab:p.colaboradores.map(i=>nome('professores',i)),als:p.alunos.map(i=>{const a=by('alunos',i);return{nome:a.nome,bolsista:a.bolsista,acao:a.acao}}),pdf:p.pdf||null,pend:{colab:'',als:''}});
+async function abrirProj(p){
+  if(dirty()&&draft.editId!==p.id&&!confirm('Há um cadastro em andamento. Descartar e editar este projeto?'))return;
+  draft=fromProj(p);await putDraft();go('cadastro');
+}
+
+/* ---------- Navegação ---------- */
+function go(t){
+  acClose();flush();tab=t;
+  document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('on',e.id==='t-'+t));
+  const n=D.projetos.filter(alerta).length;
+  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-go="${k}" class="${k===t?'on':''}">${l}${k==='alertas'&&n?`<span class="cn">${n}</span>`:''}</button>`).join('');
+  ({dash:renderDash,cadastro:renderProj,consulta:renderConsulta,alertas:renderAlertas}[t]||(()=>renderCad(t)))();
+}
+
+/* ---------- Dashboard ---------- */
+function renderDash(){
+  const P=D.projetos,nal=P.filter(alerta).length;
+  const al=[...new Set(P.flatMap(p=>p.alunos))].map(i=>by('alunos',i)).filter(Boolean);
+  const cnt=f=>{const m={};P.forEach(p=>{const k=f(p);m[k]=(m[k]||0)+1});return Object.entries(m)};
+  const top=a=>a.sort((x,y)=>y[1]-x[1]).slice(0,6);
+  const em30=P.filter(p=>p.fim>=hoje()&&p.fim<=new Date(Date.now()+30*864e5).toISOString().slice(0,10)&&['Em execução','Prorrogado','Relatório pendente'].includes(p.status)).length;
+  const stat=(v,l,c,g)=>`<div class="stat ${c||''}" ${g?`data-go="${g}"`:''}><b>${v}</b><span>${l}</span></div>`;
+  const bars=(t,rows)=>{const m=Math.max(1,...rows.map(r=>r[1]));return `<div class="card"><h2>${t}</h2>${rows.some(r=>r[1])?rows.map(([l,v,r])=>`<div class="br"><span class="bl" title="${esc(l)}">${esc(l)}</span><div class="bt"><i class="${r?'rd':''}" style="width:${v/m*100}%"></i></div><b>${v}</b></div>`).join(''):'<div class="empty">Sem dados.</div>'}</div>`};
+  const sim=k=>P.filter(p=>p[k]==='Sim').length;
+  $('#t-dash').innerHTML=`<div class="stats">
+    ${stat(P.length,'Projetos')}${stat(P.filter(p=>p.status==='Em execução').length,'Em execução')}
+    ${stat(al.length,'Alunos envolvidos')}${stat(al.filter(a=>a.bolsista==='Sim').length,'Alunos bolsistas')}
+    ${stat(al.filter(a=>a.acao==='Sim').length,'Alunos de ação afirmativa')}
+    ${stat(em30,'Vencem em 30 dias')}${stat('! '+nal,'Projetos com alerta','red','alertas')}</div>
+  <div class="charts">
+    ${bars('Projetos por status',STATUS.map((s,i)=>[s,P.filter(p=>p.status===s).length,i>=3]))}
+    ${bars('Projetos por ano',cnt(p=>p.ano).sort((a,b)=>b[0]-a[0]))}
+    ${bars('Projetos por edital',top(cnt(p=>nome('editais',p.edital))))}
+    ${bars('Projetos por coordenador',top(cnt(p=>nome('professores',p.coordenador))))}
+    ${bars('Parceria por setor produtivo',top(Object.entries(P.filter(p=>p.parceria==='Sim'&&p.setor).reduce((m,p)=>(m[p.setor]=(m[p.setor]||0)+1,m),{}))))}
+    ${bars('Perfil dos projetos',[['Bolsa atividade',sim('bolsaAtividade')],['Pesquisa aplicada',sim('pesquisaAplicada')],['Parceria com setor produtivo',sim('parceria')]])}
+  </div>`;
+}
+
+/* ---------- Pré-cadastros ---------- */
+const CAD={
+  professores:{t:'professor',f:[{k:'nome',l:'Nome do professor'}]},
+  editais:{t:'edital',f:[{k:'titulo',l:'Título do edital'}]},
+  alunos:{t:'aluno',f:[{k:'nome',l:'Nome do aluno'},{k:'bolsista',l:'Bolsista',yn:1},{k:'acao',l:'Ação afirmativa',yn:1}]}
+};
+function renderCad(s){
+  const c=CAD[s],e=editing[s]||{},list=[...D[s]].sort((a,b)=>a[key(s)].localeCompare(b[key(s)]));
+  $('#t-'+s).innerHTML=`
+  <div class="card"><h2>${e.id?'Editar':'Novo'} ${c.t}</h2>
+    <form data-s="${s}" class="row">
+      ${c.f.map(f=>f.yn?`<label>${f.l}<select name="${f.k}">${yn(e[f.k])}</select></label>`:`<label>${f.l}<input name="${f.k}" required value="${esc(e[f.k])}"></label>`).join('')}
+      <div class="btns"><button class="btn">Salvar</button>${e.id?`<button type="button" class="btn ghost" data-cancel="${s}">Cancelar</button>`:''}</div>
+    </form>
+    <p class="hint">${s==='professores'?'Professor e colaborador são o mesmo cadastro (o coordenador de um projeto pode ser colaborador em outro). ':''}Cadastros feitos diretamente no projeto também aparecem aqui.</p></div>
+  <div class="wrap"><table><thead><tr>${c.f.map(f=>`<th>${f.l}</th>`).join('')}<th>Ações</th></tr></thead><tbody>
+    ${list.map(x=>`<tr>${c.f.map(f=>`<td>${f.yn?badge(f.l,x[f.k]):esc(x[f.k])}</td>`).join('')}
+      <td class="a"><button class="btn ghost sm" data-edit="${s}:${x.id}">Editar</button><button class="btn del sm" data-del="${s}:${x.id}">Excluir</button></td></tr>`).join('')
+      ||`<tr><td colspan="${c.f.length+1}" class="empty">Nenhum ${c.t} cadastrado.</td></tr>`}
+  </tbody></table></div>`;
+}
+const emUso=(s,id)=>D.projetos.some(p=>s==='professores'?(p.coordenador===id||p.colaboradores.includes(id)):s==='editais'?p.edital===id:p.alunos.includes(id));
+
+/* ---------- Cadastro de projetos ---------- */
+function renderProj(){
+  const d=draft,f=d.f;
+  $('#t-cadastro').innerHTML=`
+  <div class="card bar"><button class="btn" data-newp="1">Novo projeto</button>
+    <select data-editsel="1"><option value="">Editar projeto existente…</option>${D.projetos.map(p=>`<option value="${p.id}" ${p.id===d.editId?'selected':''}>${p.ano} – ${esc(p.titulo)}</option>`).join('')}</select>
+    <span class="hint">O progresso é salvo automaticamente, mesmo ao trocar de aba.</span></div>
+  <div class="card"><h2>${d.editId?'Editando projeto':'Novo projeto'}</h2>
+  <form id="pf" class="grid" autocomplete="off">
+    <label>Ano<input type="number" name="ano" min="2000" max="2100" required value="${esc(f.ano)}"></label>
+    <label>Edital<input name="edital" data-ac="editais" required placeholder="Digite ou escolha o edital" value="${esc(f.edital)}"></label>
+    <label>Coordenador (professor)<input name="coord" data-ac="professores" required placeholder="Digite ou escolha o professor" value="${esc(f.coord)}"></label>
+    <label>Código SIGAA<input name="sigaa" required value="${esc(f.sigaa)}"></label>
+    <label class="full">Título do projeto<input name="titulo" required value="${esc(f.titulo)}"></label>
+    <div class="lb">Colaboradores (professores)<div class="add"><input id="in-colab" data-ac="professores" placeholder="Digite o nome e tecle Enter" value="${esc(d.pend.colab)}"><button type="button" class="btn ghost" data-addbtn="colab">Adicionar</button></div><div class="chips" id="ch-colab"></div></div>
+    <div class="lb">Alunos<div class="add"><input id="in-als" data-ac="alunos" placeholder="Digite o nome e tecle Enter" value="${esc(d.pend.als)}"><button type="button" class="btn ghost" data-addbtn="als">Adicionar</button></div><div class="chips" id="ch-als"></div>
+      <span class="hint">Alunos já cadastrados trazem bolsista e ação afirmativa automaticamente. Alunos novos são cadastrados junto com o projeto.</span></div>
+    <label>Bolsa atividade<select name="bolsaAtividade">${yn(f.bolsaAtividade)}</select></label>
+    <label>Pesquisa aplicada<select name="pesquisaAplicada">${yn(f.pesquisaAplicada)}</select></label>
+    <label>Parceria com setor produtivo<select name="parceria">${yn(f.parceria)}</select></label>
+    <label id="setor-wrap" class="${f.parceria==='Sim'?'':'hide'}">Nome do setor produtivo<input name="setor" data-ac="setor" placeholder="Digite ou escolha o setor" value="${esc(f.setor)}"></label>
+    <label>Data de início<input type="date" name="inicio" required value="${f.inicio}"></label>
+    <label>Data de fim<input type="date" name="fim" required value="${f.fim}"></label>
+    <label>Status<select name="status">${STATUS.map(s=>`<option ${s===f.status?'selected':''}>${s}</option>`).join('')}</select></label>
+    <label>Relatório em PDF<input type="file" name="pdf" accept="application/pdf"><span class="hint" id="pdfname">${d.pdf?'Anexo: '+esc(d.pdf.name):''}</span></label>
+    <div class="warn full hide" id="stwarn"></div>
+    <div class="btns full"><button class="btn">${d.editId?'Salvar alterações':'Cadastrar projeto'}</button>${d.editId?'<button type="button" class="btn ghost" data-newp="1">Cancelar edição</button>':''}</div>
+  </form></div>`;
+  chips();stWarn();
+}
+function stWarn(){
+  const f=draft.f,e=$('#stwarn');if(!e)return;
+  const m=alerta({fim:f.fim,status:f.status});
+  e.classList.toggle('hide',!m);e.innerHTML=m?`<span class="ex">!</span>${esc(m)}. Se o projeto já terminou, mude o status para "Finalizado"; se foi estendido, ajuste a data de fim.`:'';
+}
+function chips(){
+  $('#ch-colab').innerHTML=draft.colab.map((n,i)=>`<span class="chip">${esc(n)}<b data-rm="colab:${i}" title="Remover">×</b></span>`).join('');
+  $('#ch-als').innerHTML=draft.als.map((a,i)=>{
+    const x=D.alunos.find(y=>norm(y.nome)===norm(a.nome));
+    const sl=(k,l)=>`<select data-na="${i}:${k}" title="${l}"><option value="Não">${l}: Não</option><option value="Sim" ${a[k]==='Sim'?'selected':''}>${l}: Sim</option></select>`;
+    return `<span class="chip">${esc(a.nome)}${x?badge('Bolsista',x.bolsista)+badge('Ação afirm.',x.acao):`<em>novo</em>${sl('bolsista','Bolsista')}${sl('acao','Ação afirm.')}`}<b data-rm="als:${i}" title="Remover">×</b></span>`}).join('');
+}
+function addItem(k,val){
+  const inp=$('#in-'+k),v=(val??inp.value).trim().replace(/\s+/g,' ');if(!v)return;
+  if(k==='colab'){if(!draft.colab.some(n=>norm(n)===norm(v))&&norm(v)!==norm(draft.f.coord))draft.colab.push(canon('professores',v))}
+  else if(!draft.als.some(a=>norm(a.nome)===norm(v)))draft.als.push({nome:canon('alunos',v),bolsista:'Não',acao:'Não'});
+  inp.value='';draft.pend[k]='';chips();persist();
+}
+function syncForm(){
+  const form=$('#pf'),fd=new FormData(form);
+  Object.keys(draft.f).forEach(k=>{if(fd.has(k))draft.f[k]=fd.get(k)});
+  const file=form.pdf.files[0];if(file){draft.pdf=file;$('#pdfname').textContent='Anexo: '+file.name}
+  $('#setor-wrap').classList.toggle('hide',draft.f.parceria!=='Sim');
+  stWarn();persist();
+}
+async function ensure(s,name,extra){
+  let x=D[s].find(y=>norm(y[key(s)])===norm(name));
+  if(!x){x={[key(s)]:name.trim(),...extra};await save(s,x);D[s].push(x)}
+  return x.id;
+}
+async function salvarProj(){
+  const f=draft.f;
+  if(f.fim<f.inicio)return alert('A data de fim não pode ser anterior à data de início.');
+  if(f.parceria==='Sim'&&!f.setor.trim())return alert('Informe o nome do setor produtivo.');
+  if(draft.pdf&&draft.pdf.type&&draft.pdf.type!=='application/pdf')return alert('Anexe um arquivo PDF.');
+  const co=await ensure('professores',f.coord);
+  const colabs=[];for(const n of draft.colab)if(norm(n)!==norm(f.coord))colabs.push(await ensure('professores',n));
+  const als=[];for(const a of draft.als)als.push(await ensure('alunos',a.nome,{bolsista:a.bolsista,acao:a.acao}));
+  const ed=await ensure('editais',f.edital);
+  const old=draft.editId?by('projetos',draft.editId):{};
+  const pid=await save('projetos',{...old,ano:+f.ano,edital:ed,coordenador:co,colaboradores:[...new Set(colabs)],alunos:[...new Set(als)],
+    bolsaAtividade:f.bolsaAtividade,pesquisaAplicada:f.pesquisaAplicada,parceria:f.parceria,setor:f.parceria==='Sim'?f.setor.trim():'',
+    sigaa:f.sigaa.trim(),titulo:f.titulo.trim(),inicio:f.inicio,fim:f.fim,status:f.status,pdf:await subirPdf(draft.pdf,old.pdf)});
+  draft=novoRasc();await putDraft();await load();
+  try{pdfProjeto(by('projetos',pid))}catch(e){console.error(e)} /* salvar = já baixa o PDF deste projeto */
+  go('consulta');
+}
+
+/* ---------- Consulta ---------- */
+function renderConsulta(){
+  const anos=[...new Set(D.projetos.map(p=>p.ano))].sort((a,b)=>b-a);
+  const sel=(k,ph,h)=>`<select data-f="${k}"><option value="">${ph}</option>${h}</select>`;
+  const o=(arr,k,v)=>arr.map(x=>`<option value="${x.id}" ${v==x.id?'selected':''}>${esc(x[k])}</option>`).join('');
+  const sn=(k,ph)=>sel(k,ph,['Sim','Não'].map(v=>`<option ${F[k]===v?'selected':''}>${v}</option>`).join(''));
+  $('#t-consulta').innerHTML=`<div class="card">
+    <div class="bar"><input class="big" type="search" data-f="q" placeholder="Pesquisar por título, SIGAA, professor, aluno, edital, setor…" value="${esc(F.q)}"><button class="btn" data-newp="1">Novo projeto</button></div>
+    <div class="filters">
+      ${sel('ano','Todos os anos',anos.map(a=>`<option ${F.ano==a?'selected':''}>${a}</option>`).join(''))}
+      ${sel('edital','Todos os editais',o(D.editais,'titulo',F.edital))}
+      ${sel('coord','Todos os coordenadores',o(D.professores,'nome',F.coord))}
+      ${sel('colab','Todos os colaboradores',o(D.professores,'nome',F.colab))}
+      ${sel('aluno','Todos os alunos',o(D.alunos,'nome',F.aluno))}
+      ${sel('status','Todos os status',STATUS.map(s=>`<option ${F.status===s?'selected':''}>${s}</option>`).join(''))}
+      ${sn('bols','Bolsista: todos')}${sn('acao','Ação afirmativa: todos')}
+    </div><button class="btn ghost sm" data-clear="1">Limpar filtros</button></div>
+    <div class="selbar"><span id="selinfo"></span><span class="sp"></span>
+      <button class="btn ghost sm" data-selall="1">Selecionar todos os listados</button>
+      <button class="btn ghost sm" data-selnone="1">Limpar seleção</button>
+      <button class="btn" data-exps="pdf" title="Baixa em PDF somente os projetos marcados">Baixar PDF</button>
+      <button class="btn" data-exps="xlsx" title="Baixa em planilha Excel somente os projetos marcados">Baixar Excel</button></div>
+    <div class="selbar"><b>Operações:</b>
+      <button class="btn" data-newp="1" title="Cadastrar um novo projeto">Inserir projeto</button>
+      <button class="btn ghost" data-bulk="dup" title="Cria uma cópia de cada projeto marcado (sem o anexo PDF)">Duplicar selecionados</button>
+      <button class="btn ghost" data-bulk="edit" title="Altera um ou mais campos de todos os projetos marcados de uma só vez">Alterar selecionados</button>
+      <button class="btn del" data-bulk="del" title="Exclui todos os projetos marcados">Excluir selecionados</button></div>
+    <p class="cnt" id="cnt"></p><div class="wrap"><table><thead><tr>
+    <th class="ck"><input type="checkbox" data-selhead="1" title="Marcar/desmarcar todos os listados" aria-label="Marcar todos"></th><th>Ano</th><th>Edital</th><th>SIGAA</th><th>Título</th><th>Coordenador</th><th>Colaboradores</th><th>Alunos</th>
+    <th>Bolsa ativ.</th><th>Pesq. aplicada</th><th>Parceria / setor</th><th>Início</th><th>Fim</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tb"></tbody></table></div>`;
+  drawTable();
+}
+function filtrados(){
+  const q=norm(F.q);
+  return D.projetos.filter(p=>{
+    const al=p.alunos.map(id=>by('alunos',id)).filter(Boolean);
+    const txt=norm([p.ano,p.sigaa,p.titulo,p.status,p.setor,nome('editais',p.edital),nome('professores',p.coordenador),...p.colaboradores.map(i=>nome('professores',i)),...al.map(a=>a.nome)].join(' '));
+    return (!q||txt.includes(q))&&(!F.ano||p.ano==F.ano)&&(!F.edital||p.edital==F.edital)&&(!F.coord||p.coordenador==F.coord)
+      &&(!F.colab||p.colaboradores.includes(+F.colab))&&(!F.aluno||p.alunos.includes(+F.aluno))&&(!F.status||p.status===F.status)
+      &&(!F.bols||al.some(a=>a.bolsista===F.bols))&&(!F.acao||al.some(a=>a.acao===F.acao));
+  }).sort((a,b)=>b.ano-a.ano||a.titulo.localeCompare(b.titulo));
+}
+function drawTable(){
+  const rows=filtrados();
+  $('#cnt').textContent=`${rows.length} de ${D.projetos.length} projeto(s)`;
+  $('#tb').innerHTML=rows.map(p=>`<tr>
+    <td class="ck"><input type="checkbox" data-sel="${p.id}" ${SEL.has(p.id)?'checked':''} aria-label="Selecionar projeto"></td>
+    <td>${p.ano}</td><td>${esc(nome('editais',p.edital))}</td><td>${esc(p.sigaa)}</td><td style="min-width:240px">${ex(p)}${esc(p.titulo)}</td>
+    <td>${esc(nome('professores',p.coordenador))}</td>
+    <td>${p.colaboradores.map(i=>esc(nome('professores',i))).join('<br>')||'—'}</td>
+    <td>${p.alunos.map(i=>{const a=by('alunos',i);return a?`${esc(a.nome)}<br>${badge('Bolsista',a.bolsista)} ${badge('Ação afirm.',a.acao)}`:''}).join('<hr style="border:0;border-top:1px solid #e5ece7;margin:5px 0">')||'—'}</td>
+    <td>${p.bolsaAtividade}</td><td>${p.pesquisaAplicada}</td><td>${p.parceria==='Sim'?'Sim: '+esc(p.setor):'Não'}</td><td>${fdate(p.inicio)}</td><td>${fdate(p.fim)}</td>
+    <td><span class="bd st${STATUS.indexOf(p.status)}">${p.status}</span></td>
+    <td class="a">${p.pdf?`<button class="btn ghost sm" data-pdf="${p.id}" title="Abrir o relatório PDF anexado ao projeto">Anexo</button>`:''}<button class="btn ghost sm" data-pdfproj="${p.id}" title="Baixar um PDF com os dados deste projeto">Exportar PDF</button><button class="btn ghost sm" data-edit="proj:${p.id}">Alterar</button><button class="btn ghost sm" data-dup="${p.id}" title="Criar uma cópia deste projeto">Duplicar</button><button class="btn del sm" data-del="proj:${p.id}">Excluir</button></td></tr>`).join('')
+    ||'<tr><td colspan="15" class="empty">Nenhum projeto encontrado.</td></tr>';
+  selUI(rows);
+}
+function selUI(rows){
+  rows=rows||filtrados();
+  [...SEL].forEach(id=>{if(!by('projetos',id))SEL.delete(id)});
+  const n=SEL.size,vis=rows.filter(p=>SEL.has(p.id)).length;
+  $('#selinfo').innerHTML=`<b>${n}</b> projeto(s) selecionado(s) para exportar`;
+  document.querySelectorAll('[data-exps],[data-bulk]').forEach(b=>b.disabled=!n);
+  const h=$('[data-selhead]');if(h){h.checked=rows.length>0&&vis===rows.length;h.indeterminate=vis>0&&vis<rows.length}
+}
+const selecionados=()=>projOrdenados().filter(p=>SEL.has(p.id));
+
+/* ---------- Operações em lote: duplicar, alterar, excluir ---------- */
+async function duplicarProjetos(ids){
+  let ult=null;
+  for(const id of ids){
+    const o=by('projetos',id);if(!o)continue;
+    const {id:_i,pdf:_p,...c}=o;
+    ult=await save('projetos',{...c,titulo:o.titulo+' (cópia)',pdf:null});
+  }
+  await load();return ult;
+}
+const fechaModal=()=>$('#modal')?.remove();
+function modalLote(){
+  fechaModal();
+  const nc='<option value="">— não alterar —</option>',sn=`${nc}<option>Sim</option><option>Não</option>`;
+  const m=document.createElement('div');m.className='modal';m.id='modal';
+  m.innerHTML=`<div class="card"><h2>Alterar ${SEL.size} projeto(s) selecionado(s)</h2>
+    <p class="hint">Preencha apenas os campos que deseja alterar. Os demais permanecem como estão.</p>
+    <form id="bf" class="grid" autocomplete="off">
+      <label>Status<select name="status">${nc}${STATUS.map(s=>`<option>${s}</option>`).join('')}</select></label>
+      <label>Ano<input type="number" name="ano" min="2000" max="2100" placeholder="não alterar"></label>
+      <label>Edital<select name="edital">${nc}${[...D.editais].sort((a,b)=>a.titulo.localeCompare(b.titulo)).map(e=>`<option value="${e.id}">${esc(e.titulo)}</option>`).join('')}</select></label>
+      <label>Coordenador<select name="coord">${nc}${[...D.professores].sort((a,b)=>a.nome.localeCompare(b.nome)).map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('')}</select></label>
+      <label>Data de início<input type="date" name="inicio"></label>
+      <label>Data de fim<input type="date" name="fim"></label>
+      <label>Bolsa atividade<select name="bolsaAtividade">${sn}</select></label>
+      <label>Pesquisa aplicada<select name="pesquisaAplicada">${sn}</select></label>
+      <div class="btns full"><button class="btn">Aplicar alterações</button><button type="button" class="btn ghost" data-mclose="1">Cancelar</button></div>
+    </form></div>`;
+  document.body.appendChild(m);
+}
+async function aplicarLote(f){
+  const v=Object.fromEntries(new FormData(f));
+  if(!Object.values(v).some(x=>x!==''))return alert('Preencha ao menos um campo para alterar.');
+  const P=[...SEL].map(i=>by('projetos',i)).filter(Boolean);
+  for(const p of P){
+    if((v.fim||p.fim)<(v.inicio||p.inicio))return alert(`A data de fim ficaria anterior à de início no projeto "${p.titulo}".`);
+  }
+  if(!confirm(`Aplicar as alterações em ${P.length} projeto(s)?`))return;
+  for(const p of P){
+    const o={...p};
+    if(v.status)o.status=v.status;
+    if(v.ano)o.ano=+v.ano;
+    if(v.edital)o.edital=+v.edital;
+    if(v.coord){o.coordenador=+v.coord;o.colaboradores=o.colaboradores.filter(i=>i!==o.coordenador)}
+    if(v.inicio)o.inicio=v.inicio;
+    if(v.fim)o.fim=v.fim;
+    if(v.bolsaAtividade)o.bolsaAtividade=v.bolsaAtividade;
+    if(v.pesquisaAplicada)o.pesquisaAplicada=v.pesquisaAplicada;
+    await save('projetos',o);
+  }
+  fechaModal();await load();toast(P.length+' projeto(s) alterado(s).');go(tab);
+}
+async function excluirLote(){
+  const ids=[...SEL];if(!ids.length)return;
+  if(!confirm(`Excluir ${ids.length} projeto(s) selecionado(s)? Esta ação não pode ser desfeita.`))return;
+  for(const id of ids)await rem('projetos',id);
+  if(ids.includes(draft.editId)){draft=novoRasc();await putDraft()}
+  SEL.clear();await load();toast(ids.length+' projeto(s) excluído(s).');go(tab);
+}
+
+/* ---------- Alertas ---------- */
+function renderAlertas(){
+  const L=D.projetos.filter(alerta).sort((a,b)=>a.fim.localeCompare(b.fim));
+  $('#t-alertas').innerHTML=`<div class="card"><h2><span class="ex">!</span>Projetos com prazo vencido</h2>
+    <p class="hint">Aparecem aqui os projetos com data de fim anterior a hoje e status "Relatório pendente", "Em execução" ou "Prorrogado". Atualize o status ou a data após resolver.</p></div>
+    <div class="wrap"><table><thead><tr><th></th><th>Título</th><th>SIGAA</th><th>Coordenador</th><th>Fim</th><th>Atraso</th><th>Status</th><th>Motivo</th><th>Ações</th></tr></thead><tbody>
+    ${L.map(p=>`<tr><td>${ex(p)}</td><td style="min-width:240px">${esc(p.titulo)}</td><td>${esc(p.sigaa)}</td><td>${esc(nome('professores',p.coordenador))}</td>
+      <td>${fdate(p.fim)}</td><td>${atraso(p)} dia(s)</td><td><select class="stsel" data-st="${p.id}" title="Alterar status">${STATUS.map(x=>`<option ${x===p.status?'selected':''}>${x}</option>`).join('')}</select></td><td>${esc(alerta(p))}</td>
+      <td class="a">${p.pdf?`<button class="btn ghost sm" data-pdf="${p.id}" title="Abrir o relatório PDF anexado ao projeto">Anexo</button>`:''}<button class="btn ghost sm" data-edit="proj:${p.id}">Editar</button></td></tr>`).join('')
+      ||'<tr><td colspan="9" class="empty">Nenhum projeto com alerta. Tudo em dia.</td></tr>'}
+    </tbody></table></div>`;
+}
+
+/* ---------- Autocomplete (sem acento, com opção de cadastrar novo) ---------- */
+const AC={el:null,inp:null,items:[],i:-1};
+const acSource=k=>k==='setor'?[...new Set(D.projetos.map(p=>p.setor).filter(Boolean))]:D[k].map(x=>x[key(k)]);
+function acClose(){AC.el?.remove();AC.el=null;AC.inp=null;AC.items=[];AC.i=-1}
+function acShow(inp){
+  const k=inp.dataset.ac,q=norm(inp.value);
+  let src=acSource(k).sort((a,b)=>a.localeCompare(b));
+  if(inp.id==='in-colab')src=src.filter(n=>norm(n)!==norm(draft.f.coord)&&!draft.colab.some(c=>norm(c)===norm(n)));
+  if(inp.id==='in-als')src=src.filter(n=>!draft.als.some(a=>norm(a.nome)===norm(n)));
+  const hit=src.filter(n=>norm(n).includes(q));
+  hit.sort((a,b)=>(norm(b).startsWith(q)-norm(a).startsWith(q)));
+  const items=hit.slice(0,8).map(v=>({v}));
+  const v=inp.value.trim().replace(/\s+/g,' ');
+  if(v&&!acSource(k).some(n=>norm(n)===norm(v)))items.push({v,novo:true});
+  if(!items.length)return acClose();
+  AC.inp=inp;AC.items=items;AC.i=-1;
+  if(!AC.el){AC.el=document.createElement('div');AC.el.className='ac';document.body.appendChild(AC.el)}
+  acDraw();
+}
+function acDraw(){
+  const r=AC.inp.getBoundingClientRect();
+  Object.assign(AC.el.style,{left:r.left+scrollX+'px',top:r.bottom+scrollY+2+'px',minWidth:r.width+'px'});
+  AC.el.innerHTML=AC.items.map((x,i)=>`<div data-acv="${i}" class="${x.novo?'new ':''}${i===AC.i?'on':''}">${x.novo?`+ Cadastrar novo: “${esc(x.v)}” <small>(será salvo junto com o projeto)</small>`:esc(x.v)}</div>`).join('');
+}
+function acPick(v){
+  const inp=AC.inp;acClose();
+  if(inp.id==='in-colab'||inp.id==='in-als'){inp.value=v;addItem(inp.id.slice(3));inp.focus();}
+  else{inp.value=v;inp.dispatchEvent(new Event('input',{bubbles:true}));acClose();}
+}
+document.addEventListener('mousedown',ev=>{
+  const o=ev.target.closest('[data-acv]');
+  if(o){ev.preventDefault();acPick(AC.items[+o.dataset.acv].v)}
+  else if(ev.target!==AC.inp)acClose();
+});
+document.addEventListener('focusin',ev=>{if(ev.target.dataset?.ac)acShow(ev.target)});
+
+/* ---------- Exportar PDF (imprimir > Salvar como PDF) ---------- */
+function relatorio(modo,lista){
+  const todos=modo!=='consulta',P=lista?lista:todos?[...D.projetos].sort((a,b)=>b.ano-a.ano||a.titulo.localeCompare(b.titulo)):filtrados();
+  const al=[...new Set(P.flatMap(p=>p.alunos))].map(i=>by('alunos',i)).filter(Boolean);
+  const tb=(h,b)=>`<table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${b||`<tr><td colspan="${h.length}">Nenhum registro.</td></tr>`}</tbody></table>`;
+  const nm=(a,k)=>[...a].sort((x,y)=>x[k].localeCompare(y[k]));
+  const proj=tb(['Ano','Edital','SIGAA','Título','Coordenador','Colaboradores','Alunos (bolsista / ação afirm.)','Bolsa ativ.','Pesq. apl.','Setor produtivo','Início','Fim','Status'],
+    P.map(p=>`<tr><td>${p.ano}</td><td>${esc(nome('editais',p.edital))}</td><td>${esc(p.sigaa)}</td><td>${ex(p)}${esc(p.titulo)}</td><td>${esc(nome('professores',p.coordenador))}</td>
+    <td>${p.colaboradores.map(i=>esc(nome('professores',i))).join('<br>')||'—'}</td>
+    <td>${p.alunos.map(i=>{const a=by('alunos',i);return a?`${esc(a.nome)} (${a.bolsista} / ${a.acao})`:''}).join('<br>')||'—'}</td>
+    <td>${p.bolsaAtividade}</td><td>${p.pesquisaAplicada}</td><td>${p.parceria==='Sim'?esc(p.setor):'—'}</td><td>${fdate(p.inicio)}</td><td>${fdate(p.fim)}</td><td>${p.status}</td></tr>`).join(''));
+  const A=P.filter(alerta).sort((a,b)=>a.fim.localeCompare(b.fim));
+  const alr=tb(['','Título','SIGAA','Coordenador','Fim','Atraso','Status','Motivo'],A.map(p=>`<tr><td>${ex(p)}</td><td>${esc(p.titulo)}</td><td>${esc(p.sigaa)}</td><td>${esc(nome('professores',p.coordenador))}</td><td>${fdate(p.fim)}</td><td>${atraso(p)} dia(s)</td><td>${p.status}</td><td>${esc(alerta(p))}</td></tr>`).join(''));
+  const rs=(v,l)=>`<div><b>${v}</b>${l}</div>`;
+  const solo=modo==='proj';
+  let h=`<h1>Gestão de Projetos — ${solo?'Relatório de projetos':todos?'Relatório geral':'Consulta de projetos'}</h1><div>Emitido em ${fdate(hoje())}${todos?'':' · '+P.length+' projeto(s) conforme filtros aplicados'}</div>
+  ${solo?'':`<div class="resumo">${rs(P.length,'Projetos')}${rs(P.filter(p=>p.status==='Em execução').length,'Em execução')}${rs(al.length,'Alunos envolvidos')}${rs(al.filter(a=>a.bolsista==='Sim').length,'Bolsistas')}${rs(al.filter(a=>a.acao==='Sim').length,'Ação afirmativa')}${rs(A.length,'Com alerta (!)')}</div>`}
+  <h2>Projetos</h2>${proj}${solo?'':`<h2>Alertas — prazo vencido</h2>${alr}`}`;
+  if(modo==='tudo')h+=`<div class="pb"></div><h2>Professores / Colaboradores</h2>${tb(['Nome'],nm(D.professores,'nome').map(x=>`<tr><td>${esc(x.nome)}</td></tr>`).join(''))}
+  <h2>Editais</h2>${tb(['Título'],nm(D.editais,'titulo').map(x=>`<tr><td>${esc(x.titulo)}</td></tr>`).join(''))}
+  <h2>Alunos</h2>${tb(['Nome','Bolsista','Ação afirmativa'],nm(D.alunos,'nome').map(x=>`<tr><td>${esc(x.nome)}</td><td>${x.bolsista}</td><td>${x.acao}</td></tr>`).join(''))}`;
+  $('#rel').innerHTML=h;
+  const t=document.title;document.title='Gestao-de-Projetos-'+hoje();
+  window.onafterprint=()=>{$('#rel').innerHTML='';document.title=t};
+  window.print();
+}
+
+/* ---------- Exportar planilha (relatório de projetos) ---------- */
+const toast=t=>{let e=$('#toast');if(!e){e=document.createElement('div');e.id='toast';e.className='toast';document.body.appendChild(e)}
+  e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',3500)};
+const projOrdenados=()=>[...D.projetos].sort((a,b)=>b.ano-a.ano||a.titulo.localeCompare(b.titulo));
+/* PDF direto (sem janela de impressão): só a tabela de projetos */
+function gerarPdf(P,titulo,arq){
+  const J=window.jspdf&&window.jspdf.jsPDF;
+  const doc=J?new J({orientation:'landscape',unit:'mm',format:'a4'}):null;
+  if(!doc||typeof doc.autoTable!=='function')return false;
+  const t=v=>String(v??'').replace(/—/g,'-');
+  const corpo=P.map(p=>{
+    const al=p.alunos.map(i=>by('alunos',i)).filter(Boolean);
+    return [p.ano,nome('editais',p.edital),p.sigaa,(alerta(p)?'! ':'')+p.titulo,nome('professores',p.coordenador),
+      p.colaboradores.map(i=>nome('professores',i)).join('\n')||'-',
+      al.map(a=>`${a.nome} (${a.bolsista}/${a.acao})`).join('\n')||'-',
+      p.bolsaAtividade,p.pesquisaAplicada,p.parceria==='Sim'?(p.setor||'Sim'):'-',fdate(p.inicio),fdate(p.fim),p.status].map(t);
+  });
+  doc.setFontSize(14);doc.setTextColor(21,128,61);doc.text(titulo,10,12);
+  doc.setFontSize(9);doc.setTextColor(90);doc.text(`Emitido em ${fdate(hoje())}  |  ${P.length} projeto(s)`,10,17.5);
+  doc.autoTable({
+    startY:21,margin:{left:10,right:10,top:12,bottom:12},
+    head:[['Ano','Edital','SIGAA','Título','Coordenador','Colaboradores','Alunos (bolsista/ação afirm.)','Bolsa ativ.','Pesq. apl.','Setor produtivo','Início','Fim','Status']],
+    body:corpo,theme:'grid',
+    styles:{fontSize:7,cellPadding:1.6,overflow:'linebreak',valign:'top',lineColor:[217,226,220],lineWidth:.15,textColor:[31,41,55]},
+    headStyles:{fillColor:[21,128,61],textColor:255,fontStyle:'bold'},
+    alternateRowStyles:{fillColor:[250,252,251]},
+    columnStyles:{0:{cellWidth:8},1:{cellWidth:24},2:{cellWidth:16},3:{cellWidth:46},4:{cellWidth:26},5:{cellWidth:28},6:{cellWidth:36},7:{cellWidth:11},8:{cellWidth:11},9:{cellWidth:18},10:{cellWidth:14},11:{cellWidth:14},12:{cellWidth:17}},
+    didParseCell:h=>{if(h.section==='body'&&h.column.index===3&&alerta(P[h.row.index]))h.cell.styles.textColor=[220,38,38]}
+  });
+  const n=doc.getNumberOfPages(),w=doc.internal.pageSize.getWidth(),hh=doc.internal.pageSize.getHeight();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(120);doc.text(`Página ${i} de ${n}`,w-10,hh-6,{align:'right'})}
+  doc.save(arq+'.pdf');return true;
+}
+/* PDF de UM projeto: tabela com os dados cadastrados */
+function gerarPdfProjeto(p){
+  const J=window.jspdf&&window.jspdf.jsPDF;
+  const doc=J?new J({orientation:'portrait',unit:'mm',format:'a4'}):null;
+  if(!doc||typeof doc.autoTable!=='function')return false;
+  const t=v=>String(v??'').replace(/—/g,'-');
+  const al=p.alunos.map(i=>by('alunos',i)).filter(Boolean);
+  const linhas=[
+    ['Título',p.titulo],['Ano',p.ano],['Edital',nome('editais',p.edital)],['Código SIGAA',p.sigaa],
+    ['Coordenador',nome('professores',p.coordenador)],
+    ['Colaboradores',p.colaboradores.map(i=>nome('professores',i)).join('\n')||'-'],
+    ['Alunos',al.map(a=>`${a.nome}  (Bolsista: ${a.bolsista||'Não'} | Ação afirmativa: ${a.acao||'Não'})`).join('\n')||'-'],
+    ['Bolsa atividade',p.bolsaAtividade],['Pesquisa aplicada',p.pesquisaAplicada],
+    ['Parceria com setor produtivo',p.parceria==='Sim'?'Sim - '+(p.setor||''):'Não'],
+    ['Data de início',fdate(p.inicio)],['Data de fim',fdate(p.fim)],['Status',p.status]
+  ];
+  if(alerta(p))linhas.push(['Alerta',alerta(p)]);
+  doc.setFontSize(14);doc.setTextColor(21,128,61);doc.text('Gestão de Projetos - Ficha do projeto',14,16);
+  doc.setFontSize(9);doc.setTextColor(90);doc.text('Emitido em '+fdate(hoje()),14,21.5);
+  doc.autoTable({
+    startY:26,margin:{left:14,right:14,bottom:14},theme:'grid',
+    head:[['Campo','Informação']],body:linhas.map(r=>r.map(t)),
+    styles:{fontSize:10,cellPadding:2.6,overflow:'linebreak',valign:'top',lineColor:[217,226,220],lineWidth:.2,textColor:[31,41,55]},
+    headStyles:{fillColor:[21,128,61],textColor:255,fontStyle:'bold'},
+    columnStyles:{0:{cellWidth:52,fontStyle:'bold',fillColor:[240,253,244]}},
+    didParseCell:h=>{if(h.section==='body'&&linhas[h.row.index][0]==='Alerta')h.cell.styles.textColor=[220,38,38]}
+  });
+  const slug=norm(p.titulo).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+  doc.save('Projeto-'+(slug||p.id)+'.pdf');return true;
+}
+function pdfProjeto(p){
+  if(!p)return;
+  try{if(gerarPdfProjeto(p)){toast('PDF do projeto exportado.');return true}}catch(e){console.error(e)}
+  relatorio('proj',[p]);return false; /* sem a biblioteca: abre a impressão (Salvar como PDF) só com este projeto */
+}
+function pdfProjetos(P,titulo){
+  P=P||projOrdenados();titulo=titulo||'Gestão de Projetos - Relatório de projetos';
+  try{if(gerarPdf(P,titulo,'Relatorio-de-Projetos-'+hoje()))return true}catch(e){console.error(e)}
+  relatorio('proj');return false; /* sem a biblioteca: abre a impressão (Salvar como PDF) só com a tabela */
+}
+/* Planilha formal (ExcelJS): cabeçalho institucional, bordas, filtro, impressão A4 paisagem com rodapé numerado */
+async function gerarXlsxFormal(P,titulo,arq){
+  if(!window.ExcelJS)return false;
+  const wb=new ExcelJS.Workbook();wb.creator='Gestão de Projetos';wb.created=new Date();
+  const ws=wb.addWorksheet('Projetos',{views:[{state:'frozen',ySplit:5,showGridLines:false}],
+    pageSetup:{paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.4,right:.4,top:.6,bottom:.7,header:.3,footer:.3},horizontalCentered:true,printTitlesRow:'5:5'},
+    headerFooter:{oddFooter:'&LGestão de Projetos&CPágina &P de &N&REmitido em '+fdate(hoje())}});
+  const cols=[['Nº',5],['Ano',7],['Edital',30],['Código SIGAA',15],['Título do projeto',52],['Coordenador',28],['Colaboradores',32],['Alunos',34],['Bolsistas',9],['Ação afirmativa',10],['Bolsa atividade',10],['Pesquisa aplicada',10],['Parceria com setor produtivo',24],['Início',12],['Fim',12],['Status',17]];
+  const N=cols.length,verde='FF15803D',borda={style:'thin',color:{argb:'FFA3B5A9'}},B={top:borda,left:borda,bottom:borda,right:borda};
+  ws.columns=cols.map(c=>({width:c[1]}));
+  ws.mergeCells(1,1,1,N);ws.getCell(1,1).value=titulo.toUpperCase();
+  ws.getCell(1,1).font={name:'Calibri',size:16,bold:true,color:{argb:verde}};ws.getCell(1,1).alignment={horizontal:'center',vertical:'middle'};ws.getRow(1).height=26;
+  ws.mergeCells(2,1,2,N);ws.getCell(2,1).value='Relatório oficial de projetos';
+  ws.getCell(2,1).font={name:'Calibri',size:11,italic:true,color:{argb:'FF4B5563'}};ws.getCell(2,1).alignment={horizontal:'center'};
+  ws.mergeCells(3,1,3,N);ws.getCell(3,1).value=`Emitido em ${fdate(hoje())}  |  Total de projetos: ${P.length}`;
+  ws.getCell(3,1).font={name:'Calibri',size:10,color:{argb:'FF4B5563'}};ws.getCell(3,1).alignment={horizontal:'center'};
+  for(let c=1;c<=N;c++)ws.getCell(3,c).border={bottom:{style:'medium',color:{argb:verde}}};
+  const h=ws.getRow(5);h.values=cols.map(c=>c[0]);h.height=34;
+  h.eachCell(c=>{c.font={name:'Calibri',size:10,bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:verde}};c.alignment={horizontal:'center',vertical:'middle',wrapText:true};c.border=B});
+  P.forEach((p,i)=>{
+    const al=p.alunos.map(x=>by('alunos',x)).filter(Boolean);
+    const r=ws.addRow([i+1,p.ano,nome('editais',p.edital),p.sigaa,p.titulo,nome('professores',p.coordenador),
+      p.colaboradores.map(x=>nome('professores',x)).join('\n')||'-',al.map(a=>a.nome).join('\n')||'-',
+      al.filter(a=>a.bolsista==='Sim').length,al.filter(a=>a.acao==='Sim').length,p.bolsaAtividade,p.pesquisaAplicada,
+      p.parceria==='Sim'?('Sim - '+(p.setor||'')):'Não',fdate(p.inicio),fdate(p.fim),p.status]);
+    r.eachCell({includeEmpty:true},(c,n)=>{
+      c.font={name:'Calibri',size:10,color:{argb:'FF1F2937'}};c.border=B;
+      c.alignment={vertical:'top',wrapText:true,horizontal:[1,2,4,9,10,11,12,14,15,16].includes(n)?'center':'left'};
+      if(i%2)c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF6FAF7'}};
+    });
+    if(alerta(p)){const s=r.getCell(16);s.font={name:'Calibri',size:10,bold:true,color:{argb:'FFDC2626'}};r.getCell(15).font={name:'Calibri',size:10,bold:true,color:{argb:'FFDC2626'}}}
+    const linhas=Math.max(1,p.colaboradores.length,al.length,Math.ceil(p.titulo.length/55));
+    r.height=Math.max(18,linhas*14+4);
+  });
+  const t=ws.addRow(['','','','','TOTAL DE PROJETOS',P.length]);
+  ws.mergeCells(t.number,1,t.number,5);ws.mergeCells(t.number,6,t.number,N);
+  t.getCell(1).value='TOTAL DE PROJETOS';t.getCell(6).value=P.length;
+  t.eachCell({includeEmpty:true},c=>{c.font={name:'Calibri',size:10,bold:true,color:{argb:verde}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF0FDF4'}};c.border=B});
+  t.getCell(1).alignment={horizontal:'right'};t.getCell(6).alignment={horizontal:'left'};
+  ws.autoFilter={from:{row:5,column:1},to:{row:5+P.length,column:N}};
+  const buf=await wb.xlsx.writeBuffer();
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  a.download=arq+'.xlsx';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  return true;
+}
+async function exportarXlsx(P,titulo){
+  P=P||projOrdenados();titulo=titulo||'Gestão de Projetos';
+  try{if(await gerarXlsxFormal(P,titulo,'Relatorio-de-Projetos-'+hoje())){toast('Planilha Excel exportada ('+P.length+' projeto(s)).');return}}catch(e){console.error(e)}
+  baixarPlanilha(P);toast('Planilha exportada.');
+}
+function exportarSelecao(tipo){
+  const P=selecionados();if(!P.length)return alert('Marque ao menos um projeto na primeira coluna da tabela.');
+  if(tipo==='pdf'){pdfProjetos(P,'Gestão de Projetos - Relatório de projetos selecionados');toast('PDF exportado ('+P.length+' projeto(s)).')}
+  else exportarXlsx(P,'Gestão de Projetos');
+}
+function baixarPlanilha(P){
+  P=P||[...D.projetos].sort((a,b)=>b.ano-a.ano||a.titulo.localeCompare(b.titulo));
+  const cab=['Ano','Edital','SIGAA','Título','Coordenador','Colaboradores','Alunos','Bolsistas','Ação afirmativa','Bolsa atividade','Pesquisa aplicada','Parceria com setor produtivo','Setor produtivo','Início','Fim','Status','Alerta'];
+  const linhas=P.map(p=>{
+    const al=p.alunos.map(i=>by('alunos',i)).filter(Boolean);
+    return [p.ano,nome('editais',p.edital),p.sigaa,p.titulo,nome('professores',p.coordenador),
+      p.colaboradores.map(i=>nome('professores',i)).join('; '),
+      al.map(a=>a.nome).join('; '),al.filter(a=>a.bolsista==='Sim').map(a=>a.nome).join('; '),al.filter(a=>a.acao==='Sim').map(a=>a.nome).join('; '),
+      p.bolsaAtividade,p.pesquisaAplicada,p.parceria,p.parceria==='Sim'?p.setor:'',fdate(p.inicio).replace('—',''),fdate(p.fim).replace('—',''),p.status,alerta(p)||''];
+  });
+  const nomeArq='Relatorio-de-Projetos-'+hoje();
+  if(window.XLSX){
+    const ws=XLSX.utils.aoa_to_sheet([cab,...linhas]);
+    ws['!cols']=cab.map((c,i)=>({wch:[6,28,14,50,26,34,34,26,26,14,16,18,22,12,12,18,40][i]}));
+    ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:linhas.length,c:cab.length-1}})};
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Relatório');
+    return XLSX.writeFile(wb,nomeArq+'.xlsx');
+  }
+  /* alternativa sem a biblioteca: CSV que o Excel abre direto */
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv='﻿'+[cab,...linhas].map(l=>l.map(q).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=nomeArq+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener('submit',async ev=>{
+  ev.preventDefault();const f=ev.target;
+  if(f.id==='bf')return aplicarLote(f);
+  if(f.id==='pf'){acClose();syncForm();['colab','als'].forEach(k=>{if($('#in-'+k)?.value.trim())addItem(k)});return salvarProj();}
+  if(f.dataset.s){
+    const s=f.dataset.s,o={...(editing[s]||{})};
+    new FormData(f).forEach((v,k)=>o[k]=v.trim());
+    if(D[s].some(x=>x.id!==o.id&&norm(x[key(s)])===norm(o[key(s)])))return alert('Já existe um cadastro com este nome.');
+    await save(s,o);editing[s]=null;await load();renderCad(s);
+  }
+});
+document.addEventListener('click',async ev=>{
+  const g=ev.target.closest('[data-go]');if(g)return go(g.dataset.go);
+  const d=ev.target.dataset;
+  if(d.mclose)return fechaModal();
+  if(ev.target.classList.contains('modal'))return fechaModal();
+  if(d.bulk){
+    if(!SEL.size)return alert('Marque ao menos um projeto na primeira coluna da tabela.');
+    if(d.bulk==='edit')return modalLote();
+    if(d.bulk==='del')return excluirLote();
+    if(d.bulk==='dup'){
+      if(!confirm(`Criar uma cópia de ${SEL.size} projeto(s)? O anexo PDF não é copiado.`))return;
+      const n=SEL.size;await duplicarProjetos([...SEL]);toast(n+' projeto(s) duplicado(s).');return go(tab);
+    }
+  }
+  if(d.dup){const novo=await duplicarProjetos([+d.dup]);toast('Projeto duplicado. Ajuste os dados e salve.');return novo?abrirProj(novo):go(tab);}
+  if(d.exps)return exportarSelecao(d.exps);
+  if(d.selall){filtrados().forEach(p=>SEL.add(p.id));return drawTable();}
+  if(d.selnone){SEL.clear();return drawTable();}
+  if(d.exp)return pdfProjetos(filtrados(),'Gestão de Projetos - Consulta de projetos');
+  if(d.xls)return exportarXlsx();
+  if(d.pdfproj)return pdfProjeto(by('projetos',d.pdfproj));
+  if(d.newp){if(dirty()&&!confirm('Descartar o cadastro em andamento e começar um novo?'))return;draft=novoRasc();await putDraft();return go('cadastro');}
+  if(d.addbtn)return addItem(d.addbtn);
+  if(d.rm){const[k,i]=d.rm.split(':');draft[k].splice(+i,1);chips();return persist();}
+  if(d.cancel){editing[d.cancel]=null;return renderCad(d.cancel);}
+  if(d.clear){F={};return renderConsulta();}
+  if(d.pdf){const p=by('projetos',d.pdf).pdf,w=window.open('','_blank');
+    const {data,error}=await SB.storage.from(BK).createSignedUrl(p.path,300);
+    if(error){w&&w.close();return aviso('Erro ao abrir o PDF: '+error.message)}
+    return w?(w.location=data.signedUrl):(location.href=data.signedUrl);}
+  if(d.edit){
+    const[s,id]=d.edit.split(':');
+    if(s==='proj')return abrirProj(by('projetos',id));
+    editing[s]=by(s,id);return renderCad(s);
+  }
+  if(d.del){
+    const[s,id]=d.del.split(':');
+    if(s==='proj'){
+      if(!confirm('Excluir este projeto? Esta ação não pode ser desfeita.'))return;
+      await rem('projetos',+id);await load();return go(tab);
+    }
+    if(emUso(s,+id))return alert('Este cadastro está vinculado a um ou mais projetos. Remova o vínculo nos projetos antes de excluir.');
+    if(!confirm('Excluir este cadastro?'))return;
+    await rem(s,+id);await load();renderCad(s);
+  }
+});
+document.addEventListener('input',ev=>{
+  const t=ev.target,d=t.dataset;
+  if(d.sel){t.checked?SEL.add(+d.sel):SEL.delete(+d.sel);return selUI();}
+  if(d.selhead!==undefined){filtrados().forEach(p=>t.checked?SEL.add(p.id):SEL.delete(p.id));return drawTable();}
+  if(d.f){F[d.f]=t.value;return drawTable();}
+  if(d.editsel){const p=by('projetos',t.value);return p?abrirProj(p):null;}
+  if(d.st){(async()=>{const o=by('projetos',d.st);o.status=t.value;await save('projetos',o);await load();go(tab)})();return;}
+  if(d.na){const[i,k]=d.na.split(':');draft.als[i][k]=t.value;return persist();}
+  if(t.id==='in-colab'||t.id==='in-als'){draft.pend[t.id.slice(3)]=t.value;persist();return acShow(t);}
+  if(d.ac)acShow(t);
+  if(t.form?.id==='pf')syncForm();
+});
+document.addEventListener('keydown',ev=>{
+  if(AC.el&&ev.target===AC.inp){
+    const n=AC.items.length;
+    if(ev.key==='ArrowDown'||ev.key==='ArrowUp'){ev.preventDefault();AC.i+=ev.key==='ArrowDown'?1:-1;if(AC.i>=n)AC.i=-1;if(AC.i<-1)AC.i=n-1;return acDraw();}
+    if(ev.key==='Escape')return acClose();
+    if(ev.key==='Enter'&&AC.i>=0){ev.preventDefault();return acPick(AC.items[AC.i].v);}
+  }
+  if(ev.key==='Enter'&&(ev.target.id==='in-colab'||ev.target.id==='in-als')){ev.preventDefault();addItem(ev.target.id.slice(3));}
+});
+
+const aviso=t=>{const a=$('#aviso');a.textContent=t;a.classList.remove('hide')};
+window.addEventListener('error',e=>aviso('Erro: '+e.message));
+window.addEventListener('unhandledrejection',e=>aviso('Erro: '+(e.reason?.message||e.reason)));
+const authMsg=(t,ok)=>{const m=$('#amsg');m.textContent=t||'';m.className=t?(ok?'ok':'er'):''};
+const withTimeout=(p,ms,msg)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error(msg)),ms))]);
+let started=false,modo='entrar',ocupado=false;
+const MODOS={
+  entrar:{sub:'Entre na sua conta para acessar seus dados em qualquer dispositivo.',btn:'Entrar',ocupado:'Entrando…',tabs:1,senha:1,senha2:0,esq:1},
+  criar:{sub:'Crie uma conta gratuita. Você receberá um e-mail para confirmar o cadastro.',btn:'Criar conta',ocupado:'Criando conta…',tabs:1,senha:1,senha2:1,esq:0},
+  reset:{sub:'Informe seu e-mail e enviaremos um link para criar uma nova senha.',btn:'Enviar link de recuperação',ocupado:'Enviando…',tabs:0,senha:0,senha2:0,esq:0,volta:1},
+  nova:{sub:'Defina sua nova senha.',btn:'Salvar nova senha',ocupado:'Salvando…',tabs:0,senha:1,senha2:1,esq:0}
+};
+function setModo(m,msg,ok){
+  modo=m;const c=MODOS[m],f=$('#af');
+  $('#asub').textContent=c.sub;$('#asub-btn').textContent=c.btn;
+  $('#atabs').classList.toggle('hide',!c.tabs);
+  document.querySelectorAll('#atabs button').forEach(b=>{b.classList.toggle('on',b.dataset.modo===m);b.setAttribute('aria-selected',b.dataset.modo===m)});
+  $('#l-senha').classList.toggle('hide',!c.senha);$('#l-senha2').classList.toggle('hide',!c.senha2);
+  $('#l-esq').classList.toggle('hide',!c.esq);$('#l-volta').classList.toggle('hide',!c.volta);$('#l-reenv').classList.add('hide');
+  f.senha.required=!!c.senha;f.senha2.required=!!c.senha2;f.email.disabled=m==='nova';
+  f.senha.autocomplete=m==='entrar'?'current-password':'new-password';
+  f.senha.value=f.senha2.value='';
+  document.querySelectorAll('[data-ver]').forEach(b=>{b.textContent='Mostrar';f[b.dataset.ver].type='password'});
+  authMsg(msg,ok);
+  (m==='nova'?f.senha:(f.email.value?f.senha:f.email)).focus?.();
+}
+function ocup(v){ocupado=v;const b=$('#asub-btn');b.disabled=v;b.textContent=v?MODOS[modo].ocupado:MODOS[modo].btn}
+async function iniciar(user){
+  if(started||!user)return;started=true;U=user;
+  authMsg('Carregando seus dados…',1);
+  try{
+    await withTimeout(load(),20000,'Tempo esgotado ao carregar os dados. Verifique sua conexão e tente novamente.');
+    const {data,error}=await SB.from('gp_rascunho').select('dados').maybeSingle();
+    if(error)throw error;
+    draft=data?.dados;if(!draft||!draft.f)draft=novoRasc();
+    draft.pend=draft.pend||{colab:'',als:''};
+  }catch(e){
+    started=false;U=null;ocup(false);
+    $('#auth').classList.remove('hide');
+    return authMsg('Não foi possível carregar seus dados: '+(e.message||e));
+  }
+  $('#auth').classList.add('hide');$('#who').textContent=user.email;
+  if(location.hash||location.search)history.replaceState(null,'',location.pathname);
+  go('dash');
+  if(!STORES.some(x=>D[x].length)){
+    const L=await lerLocal();
+    if(L){const b=$('#imp');b.textContent=`Importar dados deste navegador (${L.projetos.length} projeto(s))`;b.classList.remove('hide');
+      b.onclick=async()=>{b.disabled=true;b.textContent='Importando…';try{await importarLocal(L);await load();b.classList.add('hide');go(tab)}catch(e){b.disabled=false;aviso('Erro ao importar: '+e.message)}}}
+  }
+}
+const erroAuth=e=>{
+  const m=e?.message||String(e);
+  if(/Invalid login credentials/i.test(m))return 'E-mail ou senha incorretos.';
+  if(/Email not confirmed/i.test(m))return 'Este e-mail ainda não foi confirmado. Abra o link enviado para sua caixa de entrada (veja também o spam).';
+  if(/rate limit|too many/i.test(m))return 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+  if(/already registered|already been registered/i.test(m))return 'Este e-mail já tem cadastro. Use a aba Entrar.';
+  if(/password/i.test(m)&&/6|short|weak/i.test(m))return 'A senha precisa ter pelo menos 6 caracteres.';
+  if(/fetch|network/i.test(m))return 'Sem conexão com o servidor. Verifique sua internet.';
+  return m;
+};
+$('#af').addEventListener('submit',async ev=>{
+  ev.preventDefault();if(ocupado)return;
+  const f=ev.target,email=f.email.value.trim(),senha=f.senha.value,volta=location.origin+location.pathname;
+  authMsg('');
+  if(!email||!/^\S+@\S+\.\S+$/.test(email)){f.email.focus();return authMsg('Informe um e-mail válido.')}
+  if(modo!=='reset'&&senha.length<6){f.senha.focus();return authMsg('A senha precisa ter pelo menos 6 caracteres.')}
+  if((modo==='criar'||modo==='nova')&&senha!==f.senha2.value){f.senha2.focus();return authMsg('As senhas não coincidem.')}
+  ocup(true);
+  try{
+    if(modo==='entrar'){
+      const {data,error}=await withTimeout(SB.auth.signInWithPassword({email,password:senha}),15000,'O servidor demorou para responder. Tente novamente.');
+      if(error)throw error;
+      ocup(false);return iniciar(data.user);
+    }
+    if(modo==='criar'){
+      const {data,error}=await withTimeout(SB.auth.signUp({email,password:senha,options:{emailRedirectTo:volta}}),15000,'O servidor demorou para responder. Tente novamente.');
+      if(error)throw error;
+      if(data.user&&data.user.identities&&!data.user.identities.length)throw new Error('already registered');
+      if(data.session){ocup(false);return iniciar(data.user)}
+      ocup(false);const em=email;setModo('entrar','Conta criada! Enviamos um e-mail de confirmação para '+em+'. Abra o link e você entrará automaticamente — ou volte aqui e clique em Entrar.',1);
+      f.email.value=em;$('#l-reenv').classList.remove('hide');return;
+    }
+    if(modo==='reset'){
+      const {error}=await withTimeout(SB.auth.resetPasswordForEmail(email,{redirectTo:volta}),15000,'O servidor demorou para responder. Tente novamente.');
+      if(error)throw error;
+      ocup(false);const em=email;setModo('entrar','Se este e-mail estiver cadastrado, você receberá um link para redefinir a senha.',1);f.email.value=em;return;
+    }
+    if(modo==='nova'){
+      const {data,error}=await withTimeout(SB.auth.updateUser({password:senha}),15000,'O servidor demorou para responder. Tente novamente.');
+      if(error)throw error;
+      ocup(false);return iniciar(data.user);
+    }
+  }catch(e){
+    ocup(false);authMsg(erroAuth(e));
+    if(/não foi confirmado|ainda não foi confirmado/.test(erroAuth(e)))$('#l-reenv').classList.remove('hide');
+  }
+});
+document.addEventListener('click',ev=>{
+  const m=ev.target.closest('[data-modo]');
+  if(m){const e=$('#af').email.value;setModo(m.dataset.modo);$('#af').email.value=e;return}
+  const v=ev.target.closest('[data-ver]');
+  if(v){const i=$('#af')[v.dataset.ver],mostrar=i.type==='password';i.type=mostrar?'text':'password';v.textContent=mostrar?'Ocultar':'Mostrar'}
+});
+$('#l-reenv').onclick=async()=>{
+  const email=$('#af').email.value.trim();if(!email)return authMsg('Informe o e-mail acima.');
+  try{const {error}=await SB.auth.resend({type:'signup',email,options:{emailRedirectTo:location.origin+location.pathname}});
+    if(error)throw error;authMsg('E-mail de confirmação reenviado para '+email+'.',1)}catch(e){authMsg(erroAuth(e))}
+};
+$('#sair').onclick=async()=>{flush();try{await withTimeout(SB.auth.signOut(),3000,'')}catch{}try{Object.keys(localStorage).filter(k=>/^sb-.*-auth-token/.test(k)).forEach(k=>localStorage.removeItem(k))}catch{}location.reload()};
+/* Reage a login/confirmação de e-mail feitos nesta ou em outra aba (callback síncrono: evita travar o cliente) */
+SB.auth.onAuthStateChange((ev,ses)=>{
+  if(ev==='PASSWORD_RECOVERY'){setTimeout(()=>{started=false;$('#auth').classList.remove('hide');setModo('nova')},0);return}
+  if(ev==='SIGNED_IN'&&ses&&modo!=='nova'&&!REC)setTimeout(()=>iniciar(ses.user),0);
+  if(ev==='SIGNED_OUT'&&started)setTimeout(()=>location.reload(),0);
+});
+setModo('entrar');
+if(HP.get('error_description'))authMsg(HP.get('error_description').replace(/\+/g,' ')+(/expired/i.test(HP.get('error_description')+HP.get('error_code'))?' Faça login ou peça um novo e-mail de confirmação.':''));
+else if(CONF)authMsg('E-mail confirmado! Entrando…',1);
+if(!REC)SB.auth.getSession().then(({data})=>{if(data.session)iniciar(data.session.user)}).catch(e=>authMsg(erroAuth(e)));
+</script>
+</body>
+</html>
